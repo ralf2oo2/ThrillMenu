@@ -251,7 +251,6 @@ void gui::Render() noexcept
 	ImGui::EndFrame();
 	ImGui::Render();
 	ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
-	std::cout << "Render imgui" << std::endl;
 }
 
 LRESULT CALLBACK WindowProcess(
