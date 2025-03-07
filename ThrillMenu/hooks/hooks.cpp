@@ -9,6 +9,7 @@
 #include "../ext/imgui/imgui.h"
 #include "../ext/imgui/imgui_impl_win32.h"
 #include "../ext/imgui/imgui_impl_dx9.h"
+#include "../game/lua/internallua.h"
 #include <iostream>
 
 void hooks::Setup()
@@ -87,8 +88,7 @@ void hooks::Setup()
 		throw std::runtime_error("Unable to enable pcall hook");
 	}
 
-	gamehooks::luaL_getfield = (gamehooks::_luaL_getfield)0x76F320;
-	if (MH_CreateHook((LPVOID)gamehooks::luaL_getfield, &gamehooks::LuaGetField, reinterpret_cast<LPVOID*>(&gamehooks::luaL_getfield)) != MH_OK)
+	if (MH_CreateHook((LPVOID)internallua::luaL_getfield, &gamehooks::LuaGetField, reinterpret_cast<LPVOID*>(&internallua::luaL_getfield)) != MH_OK)
 	{
 		throw std::runtime_error("Unable to enable getfield hook");
 	}

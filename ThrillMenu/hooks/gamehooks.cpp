@@ -1,4 +1,5 @@
 #include "gamehooks.h"
+#include "../game/lua/internallua.h"
 extern "C" {
 #include "lua.h"
 #include "lualib.h"
@@ -52,7 +53,7 @@ void* __fastcall gamehooks::CameraSwitcher(void* pThis, void* edx, int a2) {
 }
 
 int __fastcall gamehooks::LuaGetField(lua_State* L, int index, const char* k) {
-	int value = gamehooks::luaL_getfield(L, index, k);
+	int value = internallua::luaL_getfield(L, index, k);
 
 	std::cout << "Address of realest lua pointer: " << std::hex << reinterpret_cast<uintptr_t>(L) << std::endl;
 

@@ -40,7 +40,5 @@ namespace gamehooks
 	inline PCallOriginal PCallOg = nullptr;
 	int __fastcall PCall(void* pThis, void* edx);
 
-	typedef int(__fastcall* _luaL_getfield)(lua_State* L, int index, const char* k);
-	inline _luaL_getfield luaL_getfield = nullptr;
 	int __fastcall LuaGetField(lua_State* L, int index, const char* k);
 }
