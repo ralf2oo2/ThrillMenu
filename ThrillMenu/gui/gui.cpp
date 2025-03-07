@@ -248,6 +248,9 @@ void gui::Render() noexcept
 	ImGui::Text("Money:");
 	ImGui::End();
 
+	ImGuiIO& io = ImGui::GetIO();
+	io.MouseDrawCursor = true;
+
 	ImGui::EndFrame();
 	ImGui::Render();
 	ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
