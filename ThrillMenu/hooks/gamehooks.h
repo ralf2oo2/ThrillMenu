@@ -1,4 +1,7 @@
 #pragma once
+extern "C" {
+#include "lua.h"
+}
 namespace gamehooks
 {
 	typedef void* (__thiscall* CameraControllerOriginal)(void* pThis);
@@ -36,4 +39,8 @@ namespace gamehooks
 	typedef int(__thiscall* PCallOriginal)(void* pThi);
 	inline PCallOriginal PCallOg = nullptr;
 	int __fastcall PCall(void* pThis, void* edx);
+
+	typedef int(__fastcall* _luaL_getfield)(lua_State* L, int index, const char* k);
+	inline _luaL_getfield luaL_getfield = nullptr;
+	int __fastcall LuaGetField(lua_State* L, int index, const char* k);
 }

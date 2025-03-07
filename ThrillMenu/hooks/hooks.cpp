@@ -87,6 +87,12 @@ void hooks::Setup()
 		throw std::runtime_error("Unable to enable pcall hook");
 	}
 
+	gamehooks::luaL_getfield = (gamehooks::_luaL_getfield)0x76F320;
+	if (MH_CreateHook((LPVOID)gamehooks::luaL_getfield, &gamehooks::LuaGetField, reinterpret_cast<LPVOID*>(&gamehooks::luaL_getfield)) != MH_OK)
+	{
+		throw std::runtime_error("Unable to enable getfield hook");
+	}
+
 	if (MH_EnableHook(MH_ALL_HOOKS))
 	{
 		throw std::runtime_error("Unable to enable hooks");

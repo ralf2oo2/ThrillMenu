@@ -51,6 +51,14 @@ void* __fastcall gamehooks::CameraSwitcher(void* pThis, void* edx, int a2) {
 	return pointer;
 }
 
+int __fastcall gamehooks::LuaGetField(lua_State* L, int index, const char* k) {
+	int value = gamehooks::luaL_getfield(L, index, k);
+
+	std::cout << "Address of realest lua pointer: " << std::hex << reinterpret_cast<uintptr_t>(L) << std::endl;
+
+	return value;
+}
+
 void* __fastcall gamehooks::LuaCall(void* pThis, void* edx, char a2) {
 	void* pointer = gamehooks::LuaCallOg(pThis, a2);
 
@@ -59,16 +67,23 @@ void* __fastcall gamehooks::LuaCall(void* pThis, void* edx, char a2) {
 	uintptr_t luamanagerptr = *(uintptr_t*)0xA0C374;
 	uintptr_t secondPointer = *(uintptr_t*)(luamanagerptr + 4);
 	std::cout << "Possible lua: " << std::hex << secondPointer << std::endl;
-	lua_State* L = (lua_State*)0xDD0818;
+	//lua_State* L = (lua_State*)0xDD0818;
 
+	//const char* script = "print('Hello, Lua!')";
+	//char* copy = _strdup(script);
 
-	int status = lua_status(L);
-	if (status == 0 || status == LUA_YIELD || status == LUA_ERRRUN) {
-		printf("Valid lua_State detected\n");
-	}
-	else {
-		printf("Warning: Possibly invalid lua_State\n");
-	}
+	//int status = lua_status(L);
+	//if (status == 0 || status == LUA_YIELD || status == LUA_ERRRUN) {
+	//	printf("Valid lua_State detected\n");
+	//	//gamehooks::LoadStringOg(L, copy);
+	//	
+	//	/*lua_getglobal(L, "Money");
+	//	lua_pushnumber(L, 12345678);
+	//	lua_setglobal(L, "player_health");*/
+	//}
+	//else {
+	//	printf("Warning: Possibly invalid lua_State\n");
+	//}
 
 	//const char* script = "print('Hello, Lua!')";
 	//char* copy = _strdup(script);
