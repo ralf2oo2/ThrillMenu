@@ -216,6 +216,7 @@ void gui::Destroy() noexcept
 
 	DestroyDirectX();
 }
+
 void gui::Render() noexcept
 {
 	RECT rect;
@@ -250,15 +251,18 @@ void gui::Render() noexcept
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 
+	
+
+
 	ImGui::Begin("Thrill Menu", &open);
 	if (ImGui::Button("Press Other"))
 	{
 		uintptr_t luamanagerptr = *(uintptr_t*)0xA0C374;
 		uintptr_t secondPointer = *(uintptr_t*)(luamanagerptr + 4 * 8);
-		uintptr_t thirdPointer = (uintptr_t)(secondPointer);// +4 * 4);
+		uintptr_t thirdPointer = (uintptr_t)(secondPointer +4 * 4);
 		std::cout << "Possible lua: " << std::hex << thirdPointer << std::endl;
 
-		FILE* file = gamehooks::getDebugFile(0, 0, 8, 0, "");
+		/*FILE* file = gamehooks::getDebugFile(0, 0, 8, 0, "");
 
 		FILE* output = fopen("outconsole.txt", "wb");
 		char buffer[4096];
@@ -268,7 +272,7 @@ void gui::Render() noexcept
 			fwrite(buffer, 1, bytesRead, output);
 		}
 
-		fclose(output);
+		fclose(output);*/
 
 	}
 	if (ImGui::Button("Press Me"))

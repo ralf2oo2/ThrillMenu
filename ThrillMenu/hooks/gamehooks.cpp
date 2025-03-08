@@ -96,21 +96,40 @@ void* __fastcall gamehooks::LuaCall(void* pThis, void* edx, char a2) {
 int __cdecl gamehooks::LoadStringLua(void* pThis, char* Str) {
 	int result = gamehooks::LoadStringOg(pThis, Str);
 	std::cout << "Address of lua real pointer: " << std::hex << pThis << std::endl;
+	
 	printf("%s\n", Str);
 
 	return result;
 }
 
-int __fastcall gamehooks::PCall(void* pThis, void* edx) {
-	int result = gamehooks::PCallOg(pThis);
-	std::cout << "Address of lua real pointer: " << std::hex << pThis << std::endl;
+int __fastcall gamehooks::PCall(lua_State* L, int nargs, int nresults, int errfunc) {
+	std::cout << "Lua state used for pcall: " << std::hex << std::hex << reinterpret_cast<uintptr_t>(L) << std::endl;
+	int result = internallua::lua_pcall(L, nargs, nresults, errfunc);
+
+	//int top = lua_gettop(L);
+
+	//const char* script = "print('Hello, Lua!')";
+
+	//if (internallua::luaL_loadstring(L, script) == 0) {
+	//	// Execute the loaded chunk
+	//	if (internallua::lua_pcall(L, 0, 0, 0) != 0) {
+	//		printf("Error: %s\n", internallua::lua_tostring(L, -1));
+	//		lua_pop(L, 1);
+	//	}
+	//}
+	//else {
+	//	printf("Failed to load Lua code\n");
+	//	lua_pop(L, 1);
+	//}
+	//lua_settop(L, top);
+
 	return result;
 }
 
-const char* __fastcall gamehooks::ReaderString(lua_State* L, void* data, size_t* size) {
-	const char* value = internallua::reader_string(L, data, size);
+int __fastcall gamehooks::ReaderString(lua_State* L, lua_Reader reader, void* data, const char* chunkname) {
+	int value = internallua::lua_load(L, reader, data, chunkname);
 
-	std::cout << "ReaderStringLoc: " << ((char**)data)[0] << std::endl;
+	std::cout << "Loading : " << chunkname << std::endl;
 
 	return value;
 }

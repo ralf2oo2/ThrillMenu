@@ -7,7 +7,11 @@ namespace internallua {
 
 	//luaL_getfield
 	typedef int(__fastcall* _luaL_getfield)(lua_State* L, int index, const char* k);
-	inline _luaL_getfield luaL_getfield = (_luaL_getfield)0x76F320;
+	inline _luaL_getfield luaL_getfield = (_luaL_getfield)0x76ED70;
+
+	//luaL_setfield
+	typedef int(__fastcall* _luaL_setfield)(lua_State* L, int index, const char* k);
+	inline _luaL_setfield luaL_setfield = (_luaL_setfield)0x76F320;
 
 	//luaL_loadstring
 	typedef int(__fastcall* _luaL_loadstring)(lua_State* L, const char* s);

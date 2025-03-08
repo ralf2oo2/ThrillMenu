@@ -83,7 +83,7 @@ void hooks::Setup()
 	}
 
 	gamehooks::PCallOg = (gamehooks::PCallOriginal)0x79AE90;
-	if (MH_CreateHook((LPVOID)gamehooks::PCallOg, &gamehooks::PCall, reinterpret_cast<LPVOID*>(&gamehooks::PCallOg)) != MH_OK)
+	if (MH_CreateHook((LPVOID)internallua::lua_pcall, &gamehooks::PCall, reinterpret_cast<LPVOID*>(&internallua::lua_pcall)) != MH_OK)
 	{
 		throw std::runtime_error("Unable to enable pcall hook");
 	}
@@ -92,7 +92,7 @@ void hooks::Setup()
 	{
 		throw std::runtime_error("Unable to enable getfield hook");
 	}
-	if (MH_CreateHook((LPVOID)internallua::reader_string, &gamehooks::ReaderString, reinterpret_cast<LPVOID*>(&internallua::reader_string)) != MH_OK)
+	if (MH_CreateHook((LPVOID)internallua::lua_load, &gamehooks::ReaderString, reinterpret_cast<LPVOID*>(&internallua::lua_load)) != MH_OK)
 	{
 		throw std::runtime_error("Unable to enable getfield hook");
 	}
