@@ -6,6 +6,13 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include "../game/lua/internallua.h"
+#include "../hooks/gamehooks.h"
+extern "C" {
+#include "lua.h"
+#include "lualib.h"
+#include "lauxlib.h"
+}
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(
 	HWND window,
@@ -244,6 +251,48 @@ void gui::Render() noexcept
 	ImGui::NewFrame();
 
 	ImGui::Begin("Thrill Menu", &open);
+	if (ImGui::Button("Press Other"))
+	{
+		uintptr_t luamanagerptr = *(uintptr_t*)0xA0C374;
+		uintptr_t secondPointer = *(uintptr_t*)(luamanagerptr + 4 * 8);
+		uintptr_t thirdPointer = (uintptr_t)(secondPointer);// +4 * 4);
+		std::cout << "Possible lua: " << std::hex << thirdPointer << std::endl;
+
+		FILE* file = gamehooks::getDebugFile(0, 0, 8, 0, "");
+
+		FILE* output = fopen("outconsole.txt", "wb");
+		char buffer[4096];
+		size_t bytesRead;
+
+		while ((bytesRead = fread(buffer, 1, sizeof(buffer), file)) > 0) {
+			fwrite(buffer, 1, bytesRead, output);
+		}
+
+		fclose(output);
+
+	}
+	if (ImGui::Button("Press Me"))
+	{
+		uintptr_t luamanagerptr = *(uintptr_t*)0xA0C374;
+		uintptr_t secondPointer = *(uintptr_t*)(luamanagerptr + 4 * 8);
+		uintptr_t thirdPointer = (uintptr_t)(secondPointer + 4 * 4);
+		std::cout << "Possible lua: " << std::hex << thirdPointer << std::endl;
+		lua_State* L = (lua_State*)thirdPointer;
+
+		const char* script = "print('Hello, Lua!')";
+
+		if (luaL_loadstring(L, script) == 0) {
+			// Execute the loaded chunk
+			if (lua_pcall(L, 0, 0, 0) != 0) {
+				printf("Error: %s\n", lua_tostring(L, -1));
+			}
+		}
+		else {
+			printf("Failed to load Lua code\n");
+		}
+		std::cout << "Button pressed!" << std::endl;
+	}
+
 	//ImGui::Text("%.2X", money);
 	ImGui::Text("Money:");
 	ImGui::End();

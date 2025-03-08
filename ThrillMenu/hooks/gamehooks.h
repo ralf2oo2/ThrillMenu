@@ -1,6 +1,7 @@
 #pragma once
 extern "C" {
 #include "lua.h"
+#include <cstdio>
 }
 namespace gamehooks
 {
@@ -41,4 +42,8 @@ namespace gamehooks
 	int __fastcall PCall(void* pThis, void* edx);
 
 	int __fastcall LuaGetField(lua_State* L, int index, const char* k);
+	const char* __fastcall ReaderString(lua_State* L, void* data, size_t* size);
+
+	typedef FILE* (__fastcall* GetDebugFile)(int a, int b, int c, int d, const char* text);
+	inline GetDebugFile getDebugFile = (GetDebugFile)0x7420E0;
 }

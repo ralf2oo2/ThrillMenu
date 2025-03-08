@@ -65,13 +65,7 @@ void* __fastcall gamehooks::LuaCall(void* pThis, void* edx, char a2) {
 
 	std::cout << "Possible lua context near: " << std::hex << pThis << std::endl;
 
-	uintptr_t luamanagerptr = *(uintptr_t*)0xA0C374;
-	uintptr_t secondPointer = *(uintptr_t*)(luamanagerptr + 4);
-	std::cout << "Possible lua: " << std::hex << secondPointer << std::endl;
-	//lua_State* L = (lua_State*)0xDD0818;
-
-	//const char* script = "print('Hello, Lua!')";
-	//char* copy = _strdup(script);
+	
 
 	//int status = lua_status(L);
 	//if (status == 0 || status == LUA_YIELD || status == LUA_ERRRUN) {
@@ -111,4 +105,12 @@ int __fastcall gamehooks::PCall(void* pThis, void* edx) {
 	int result = gamehooks::PCallOg(pThis);
 	std::cout << "Address of lua real pointer: " << std::hex << pThis << std::endl;
 	return result;
+}
+
+const char* __fastcall gamehooks::ReaderString(lua_State* L, void* data, size_t* size) {
+	const char* value = internallua::reader_string(L, data, size);
+
+	std::cout << "ReaderStringLoc: " << ((char**)data)[0] << std::endl;
+
+	return value;
 }

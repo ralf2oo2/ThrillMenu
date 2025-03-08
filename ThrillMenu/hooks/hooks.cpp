@@ -92,6 +92,10 @@ void hooks::Setup()
 	{
 		throw std::runtime_error("Unable to enable getfield hook");
 	}
+	if (MH_CreateHook((LPVOID)internallua::reader_string, &gamehooks::ReaderString, reinterpret_cast<LPVOID*>(&internallua::reader_string)) != MH_OK)
+	{
+		throw std::runtime_error("Unable to enable getfield hook");
+	}
 
 	if (MH_EnableHook(MH_ALL_HOOKS))
 	{
