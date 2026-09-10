@@ -70,31 +70,10 @@ void hooks::Setup()
 		throw std::runtime_error("Unable to enable cameraswitcher hook");
 	}
 
-	gamehooks::LuaCallOg = (gamehooks::LuaCallOriginal)0x4115F0;
+	gamehooks::LuaCallOg = (gamehooks::LuaCallOriginal)0x76fbd0;
 	if (MH_CreateHook((LPVOID)gamehooks::LuaCallOg, reinterpret_cast<LPVOID>(&gamehooks::LuaCall), reinterpret_cast<LPVOID*>(&gamehooks::LuaCallOg)) != MH_OK)
 	{
 		throw std::runtime_error("Unable to enable luacall hook");
-	}
-
-	gamehooks::LoadStringOg = (gamehooks::LoadStringOriginal)0x79AB20;
-	if (MH_CreateHook((LPVOID)gamehooks::LoadStringOg, reinterpret_cast<LPVOID>(&gamehooks::LoadStringLua), reinterpret_cast<LPVOID*>(&gamehooks::LoadStringOg)) != MH_OK)
-	{
-		throw std::runtime_error("Unable to enable loadstring hook");
-	}
-
-	gamehooks::PCallOg = (gamehooks::PCallOriginal)0x79AE90;
-	if (MH_CreateHook((LPVOID)internallua::lua_pcall, reinterpret_cast<LPVOID>(&gamehooks::PCall), reinterpret_cast<LPVOID*>(&internallua::lua_pcall)) != MH_OK)
-	{
-		throw std::runtime_error("Unable to enable pcall hook");
-	}
-
-	if (MH_CreateHook((LPVOID)internallua::luaL_getfield, reinterpret_cast<LPVOID>(&gamehooks::LuaGetField), reinterpret_cast<LPVOID*>(&internallua::luaL_getfield)) != MH_OK)
-	{
-		throw std::runtime_error("Unable to enable getfield hook");
-	}
-	if (MH_CreateHook((LPVOID)internallua::lua_load, reinterpret_cast<LPVOID>(&gamehooks::ReaderString), reinterpret_cast<LPVOID*>(&internallua::lua_load)) != MH_OK)
-	{
-		throw std::runtime_error("Unable to enable getfield hook");
 	}
 
 	if (MH_EnableHook(MH_ALL_HOOKS))

@@ -29,21 +29,14 @@ namespace gamehooks
 	inline CameraSwitcherOriginal CameraSwitcherOg = nullptr;
 	void* __fastcall CameraSwitcher(void* pThis, void* edx, int a2);
 
-	typedef void* (__thiscall* LuaCallOriginal)(void* pThi, char a2);
+	typedef void (__fastcall *LuaCallOriginal)(void* L, int nargs, int nresults);
 	inline LuaCallOriginal LuaCallOg = nullptr;
-	void* __fastcall LuaCall(void* pThis, void* edx, char a2);
+	void __fastcall LuaCall(void *L, int nargs, int nresults);
 
-	typedef int (__cdecl *LoadStringOriginal)(void* pThi, char* Str);
-	inline LoadStringOriginal LoadStringOg = nullptr;
-	int __cdecl LoadStringLua(void* pThis, char* Str);
-
-	typedef int(__thiscall* PCallOriginal)(void* pThi);
-	inline PCallOriginal PCallOg = nullptr;
-	int __fastcall PCall(lua_State* L, int nargs, int nresults, int errfunc);
-
-	int __fastcall LuaGetField(lua_State* L, int index, const char* k);
-	int __fastcall ReaderString(lua_State* L, lua_Reader reader, void* data, const char* chunkname);
 
 	typedef FILE* (__fastcall* GetDebugFile)(int a, int b, int c, int d, const char* text);
 	inline GetDebugFile getDebugFile = (GetDebugFile)0x7420E0;
+
+
+	void DumpAllGlobalNames(void *L);
 }

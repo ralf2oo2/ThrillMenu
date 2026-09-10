@@ -1,10 +1,5 @@
 #include "gamehooks.h"
 #include "../game/lua/internallua.h"
-extern "C" {
-#include "lua.h"
-#include "lualib.h"
-#include "lauxlib.h"
-}
 #include <iostream>
 
 void* __fastcall gamehooks::CameraController(void* pThis, void* edx) {
@@ -52,84 +47,33 @@ void* __fastcall gamehooks::CameraSwitcher(void* pThis, void* edx, int a2) {
 	return pointer;
 }
 
-int __fastcall gamehooks::LuaGetField(lua_State* L, int index, const char* k) {
-	int value = internallua::luaL_getfield(L, index, k);
+void __fastcall gamehooks::LuaCall(void *L, int nargs, int nresults) {
+	gamehooks::LuaCallOg(L, nargs, nresults);
 
-	std::cout << "Address of realest lua pointer: " << std::hex << reinterpret_cast<uintptr_t>(L) << std::endl;
+	DumpAllGlobalNames(L);
 
-	return value;
+	std::cout << "Possible lua context near: " << std::hex << L << std::endl;
 }
 
-void* __fastcall gamehooks::LuaCall(void* pThis, void* edx, char a2) {
-	void* pointer = gamehooks::LuaCallOg(pThis, a2);
+void gamehooks::DumpAllGlobalNames(void* L) {
+	char* statePtr = reinterpret_cast<char*>(L);
 
-	std::cout << "Possible lua context near: " << std::hex << pThis << std::endl;
 
-	
+	char** topPtr = reinterpret_cast<char**>(statePtr + 8);
+	char* currentTop = *topPtr;
 
-	//int status = lua_status(L);
-	//if (status == 0 || status == LUA_YIELD || status == LUA_ERRRUN) {
-	//	printf("Valid lua_State detected\n");
-	//	//gamehooks::LoadStringOg(L, copy);
-	//	
-	//	/*lua_getglobal(L, "Money");
-	//	lua_pushnumber(L, 12345678);
-	//	lua_setglobal(L, "player_health");*/
-	//}
-	//else {
-	//	printf("Warning: Possibly invalid lua_State\n");
-	//}
+	*reinterpret_cast<int*>(currentTop + 12) = 0;
 
-	//const char* script = "print('Hello, Lua!')";
-	//char* copy = _strdup(script);
+	*topPtr = currentTop + 0x10;
 
-	//////// Load and run the Lua script
-	//if (luaL_loadstring(L , copy) != 0) {
-	//	// If there's an error, print the error message and return false
-	//	const char* errorMsg = lua_tostring(L, -1);
-	//	std::cout << "Lua error: " << errorMsg << std::endl;
-	//}
+	while (internallua::lua_next(L, -10002) != 0) {
+		size_t len = 0;
+		const char* keyName = internallua::lua_tolstring(L, -2, &len);
 
-	return pointer;
-}
+		if (keyName) {
+			std::cout << "Found Global: " << keyName << std::endl;
+		}
 
-int __cdecl gamehooks::LoadStringLua(void* pThis, char* Str) {
-	int result = gamehooks::LoadStringOg(pThis, Str);
-	std::cout << "Address of lua real pointer: " << std::hex << pThis << std::endl;
-	
-	printf("%s\n", Str);
-
-	return result;
-}
-
-int __fastcall gamehooks::PCall(lua_State* L, int nargs, int nresults, int errfunc) {
-	std::cout << "Lua state used for pcall: " << std::hex << std::hex << reinterpret_cast<uintptr_t>(L) << std::endl;
-	int result = internallua::lua_pcall(L, nargs, nresults, errfunc);
-
-	//int top = lua_gettop(L);
-
-	//const char* script = "print('Hello, Lua!')";
-
-	//if (internallua::luaL_loadstring(L, script) == 0) {
-	//	// Execute the loaded chunk
-	//	if (internallua::lua_pcall(L, 0, 0, 0) != 0) {
-	//		printf("Error: %s\n", internallua::lua_tostring(L, -1));
-	//		lua_pop(L, 1);
-	//	}
-	//}
-	//else {
-	//	printf("Failed to load Lua code\n");
-	//	lua_pop(L, 1);
-	//}
-	//lua_settop(L, top);
-
-	return result;
-}
-
-int __fastcall gamehooks::ReaderString(lua_State* L, lua_Reader reader, void* data, const char* chunkname) {
-	int value = internallua::lua_load(L, reader, data, chunkname);
-
-	std::cout << "Loading : " << chunkname << std::endl;
-
-	return value;
+		internallua::lua_settop(L, -2);
+	}
 }
