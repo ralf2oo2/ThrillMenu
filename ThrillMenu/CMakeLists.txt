@@ -10,11 +10,27 @@ if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET ThrillMenu PROPERTY CXX_STANDARD 20)
 endif()
 
-target_include_directories(ThrillMenu PRIVATE ${CMAKE_SOURCE_DIR}/Thrillmenu/ext/lua51/include)
-target_link_libraries(ThrillMenu ${CMAKE_SOURCE_DIR}/Thrillmenu/ext/lua51/lua51.lib)
+target_include_directories(ThrillMenu PRIVATE ${CMAKE_SOURCE_DIR}/ThrillMenu/ext/lua51/include)
+target_link_libraries(
+        ThrillMenu
+        d3d9
+        gdi32
+        dwmapi
+)
+
+if(DEFINED ENV{THRILLVILLE_DIR})
+  set(GAME_PATH "$ENV{THRILLVILLE_DIR}")
+else()
+  # Optional default fallback path
+  set(GAME_PATH "${CMAKE_BINARY_DIR}")
+endif()
 
 set_target_properties(ThrillMenu PROPERTIES
     OUTPUT_NAME "ThrillMenu"  # This removes the default extension
     SUFFIX ".asi"             # Set the extension to '.asi'
+    RUNTIME_OUTPUT_DIRECTORY "${GAME_PATH}"
+    LIBRARY_OUTPUT_DIRECTORY "${GAME_PATH}"
 )
+
+set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -static-libgcc -static-libstdc++ -static")
 # TODO: Add tests and install targets if needed.

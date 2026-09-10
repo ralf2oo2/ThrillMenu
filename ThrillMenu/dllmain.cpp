@@ -1,4 +1,4 @@
-﻿#include <Windows.h>
+﻿#include <windows.h>
 #include <thread>
 #include <cstdint>
 #include <iostream>

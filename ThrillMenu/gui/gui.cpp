@@ -97,6 +97,7 @@ bool gui::SetupDirectX() noexcept
 
 	if (!handle)
 	{
+		std::cout << "[DirectX Setup Error] Failed to get module handle for d3d9.dll. Win32 Error: " << GetLastError() << std::endl;
 		return false;
 	}
 	using CreateFn = LPDIRECT3D9(__stdcall*)(UINT);
@@ -106,6 +107,7 @@ bool gui::SetupDirectX() noexcept
 	));
 	if (!create)
 	{
+		std::cout << "[DirectX Setup Error] Failed to resolve Direct3DCreate9 address. Win32 Error: " << GetLastError() << std::endl;
 		return false;
 	}
 
@@ -113,36 +115,31 @@ bool gui::SetupDirectX() noexcept
 
 	if (!d3d9)
 	{
+		std::cout << "[DirectX Setup Error] Direct3DCreate9 returned NULL" << std::endl;
 		return false;
 	}
 
 	D3DPRESENT_PARAMETERS params = {};
-	params.BackBufferWidth = 0;
-	params.BackBufferHeight = 0;
-	params.BackBufferFormat = D3DFMT_UNKNOWN;
-	params.BackBufferCount = 0;
-	params.MultiSampleType = D3DMULTISAMPLE_NONE;
-	params.MultiSampleQuality = NULL;
+	params.Windowed = TRUE;
 	params.SwapEffect = D3DSWAPEFFECT_DISCARD;
 	params.hDeviceWindow = window;
-	params.EnableAutoDepthStencil = 0;
-	params.AutoDepthStencilFormat = D3DFMT_UNKNOWN;
-	params.Flags = NULL;
-	params.FullScreen_RefreshRateInHz = 0;
-	params.PresentationInterval = 0;
+	params.BackBufferFormat = D3DFMT_UNKNOWN;
 
-	if (d3d9->CreateDevice(
+	const HRESULT result = d3d9->CreateDevice(
 		D3DADAPTER_DEFAULT,
-		D3DDEVTYPE_NULLREF,
+		D3DDEVTYPE_HAL,
 		window,
-		D3DCREATE_SOFTWARE_VERTEXPROCESSING | D3DCREATE_DISABLE_DRIVER_MANAGEMENT,
+		D3DCREATE_SOFTWARE_VERTEXPROCESSING,
 		&params,
 		&device
-	) < 0)
+	);
+
+	if (FAILED(result))
 	{
+		std::cout << "[DirectX Setup Error] CreateDevice failed with HRESULT: " << result << std::endl;
 		return false;
 	}
-	std::cout << "Setup DirectX!" << std::endl;
+	std::cout << "Setup DirectX successfully" << std::endl;
 	return true;
 }
 void gui::DestroyDirectX() noexcept
@@ -285,10 +282,10 @@ void gui::Render() noexcept
 
 		const char* script = "print('Hello, Lua!')";
 
-		if (luaL_loadstring(L, script) == 0) {
+		if (internallua::luaL_loadstring(L, script) == 0) {
 			// Execute the loaded chunk
-			if (lua_pcall(L, 0, 0, 0) != 0) {
-				printf("Error: %s\n", lua_tostring(L, -1));
+			if (internallua::lua_pcall(L, 0, 0, 0) != 0) {
+				printf("Error: lua");
 			}
 		}
 		else {

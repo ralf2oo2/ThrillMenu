@@ -1,7 +1,8 @@
 #pragma once
-extern "C" {
-#include "lua.h"
-}
+
+struct lua_State;
+
+typedef const char* (*lua_Reader)(lua_State* L, void* data, size_t* size);
 
 namespace internallua {
 

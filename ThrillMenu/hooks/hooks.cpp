@@ -22,77 +22,77 @@ void hooks::Setup()
 	//DX hooks for imgui
 	if (MH_CreateHook(
 		VirtualFunction(gui::device, 42),
-		&EndScene,
+		reinterpret_cast<LPVOID>(&EndScene),
 		reinterpret_cast<void**>(&EndSceneOriginal)
 	)) throw std::runtime_error("Unable to hook EndScene()");
 
 	if (MH_CreateHook(
 		VirtualFunction(gui::device, 16),
-		&Reset,
+		reinterpret_cast<LPVOID>(&Reset),
 		reinterpret_cast<void**>(&ResetOriginal)
 	)) throw std::runtime_error("Unable to hook Reset()");
 
 	// Game related hooks
 
 	gamehooks::CameraControllerOg = (gamehooks::CameraControllerOriginal)0x575920;
-	if (MH_CreateHook((LPVOID)gamehooks::CameraControllerOg, &gamehooks::CameraController, reinterpret_cast<LPVOID*>(&gamehooks::CameraControllerOg)) != MH_OK)
+	if (MH_CreateHook((LPVOID)gamehooks::CameraControllerOg, reinterpret_cast<LPVOID>(&gamehooks::CameraController), reinterpret_cast<LPVOID*>(&gamehooks::CameraControllerOg)) != MH_OK)
 	{
 		throw std::runtime_error("Unable to enable cameraController hook");
 	}
 	
 	gamehooks::CameraRelatedOg = (gamehooks::CameraRelatedOriginal)0x5766E0;
-	if (MH_CreateHook((LPVOID)gamehooks::CameraRelatedOg, &gamehooks::CameraRelated, reinterpret_cast<LPVOID*>(&gamehooks::CameraRelatedOg)) != MH_OK)
+	if (MH_CreateHook((LPVOID)gamehooks::CameraRelatedOg, reinterpret_cast<LPVOID>(&gamehooks::CameraRelated), reinterpret_cast<LPVOID*>(&gamehooks::CameraRelatedOg)) != MH_OK)
 	{
 		throw std::runtime_error("Unable to enable cameraRelated hook");
 	}
 
 	gamehooks::CameraOg = (gamehooks::CameraOriginal)0x53B440;
-	if (MH_CreateHook((LPVOID)gamehooks::CameraOg, &gamehooks::Camera, reinterpret_cast<LPVOID*>(&gamehooks::CameraOg)) != MH_OK)
+	if (MH_CreateHook((LPVOID)gamehooks::CameraOg, reinterpret_cast<LPVOID>(&gamehooks::Camera), reinterpret_cast<LPVOID*>(&gamehooks::CameraOg)) != MH_OK)
 	{
 		throw std::runtime_error("Unable to enable camera hook");
 	}
 
 	gamehooks::GameDocumentOg = (gamehooks::GameDocumentOriginal)0x40C790;
-	if (MH_CreateHook((LPVOID)gamehooks::GameDocumentOg, &gamehooks::GameDocument, reinterpret_cast<LPVOID*>(&gamehooks::GameDocumentOg)) != MH_OK)
+	if (MH_CreateHook((LPVOID)gamehooks::GameDocumentOg, reinterpret_cast<LPVOID>(&gamehooks::GameDocument), reinterpret_cast<LPVOID*>(&gamehooks::GameDocumentOg)) != MH_OK)
 	{
 		throw std::runtime_error("Unable to enable gamedocument hook");
 	}
 
 	gamehooks::CareerLevelManagerOg = (gamehooks::CareerLevelManagerOriginal)0x4040D0;
-	if (MH_CreateHook((LPVOID)gamehooks::CareerLevelManagerOg, &gamehooks::CareerLevelManager, reinterpret_cast<LPVOID*>(&gamehooks::CareerLevelManagerOg)) != MH_OK)
+	if (MH_CreateHook((LPVOID)gamehooks::CareerLevelManagerOg, reinterpret_cast<LPVOID>(&gamehooks::CareerLevelManager), reinterpret_cast<LPVOID*>(&gamehooks::CareerLevelManagerOg)) != MH_OK)
 	{
 		throw std::runtime_error("Unable to enable careerlevelmanager hook");
 	}
 
 	gamehooks::CameraSwitcherOg = (gamehooks::CameraSwitcherOriginal)0x539380;
-	if (MH_CreateHook((LPVOID)gamehooks::CameraSwitcherOg, &gamehooks::CameraSwitcher, reinterpret_cast<LPVOID*>(&gamehooks::CameraSwitcherOg)) != MH_OK)
+	if (MH_CreateHook((LPVOID)gamehooks::CameraSwitcherOg, reinterpret_cast<LPVOID>(&gamehooks::CameraSwitcher), reinterpret_cast<LPVOID*>(&gamehooks::CameraSwitcherOg)) != MH_OK)
 	{
 		throw std::runtime_error("Unable to enable cameraswitcher hook");
 	}
 
 	gamehooks::LuaCallOg = (gamehooks::LuaCallOriginal)0x4115F0;
-	if (MH_CreateHook((LPVOID)gamehooks::LuaCallOg, &gamehooks::LuaCall, reinterpret_cast<LPVOID*>(&gamehooks::LuaCallOg)) != MH_OK)
+	if (MH_CreateHook((LPVOID)gamehooks::LuaCallOg, reinterpret_cast<LPVOID>(&gamehooks::LuaCall), reinterpret_cast<LPVOID*>(&gamehooks::LuaCallOg)) != MH_OK)
 	{
 		throw std::runtime_error("Unable to enable luacall hook");
 	}
 
 	gamehooks::LoadStringOg = (gamehooks::LoadStringOriginal)0x79AB20;
-	if (MH_CreateHook((LPVOID)gamehooks::LoadStringOg, &gamehooks::LoadStringLua, reinterpret_cast<LPVOID*>(&gamehooks::LoadStringOg)) != MH_OK)
+	if (MH_CreateHook((LPVOID)gamehooks::LoadStringOg, reinterpret_cast<LPVOID>(&gamehooks::LoadStringLua), reinterpret_cast<LPVOID*>(&gamehooks::LoadStringOg)) != MH_OK)
 	{
 		throw std::runtime_error("Unable to enable loadstring hook");
 	}
 
 	gamehooks::PCallOg = (gamehooks::PCallOriginal)0x79AE90;
-	if (MH_CreateHook((LPVOID)internallua::lua_pcall, &gamehooks::PCall, reinterpret_cast<LPVOID*>(&internallua::lua_pcall)) != MH_OK)
+	if (MH_CreateHook((LPVOID)internallua::lua_pcall, reinterpret_cast<LPVOID>(&gamehooks::PCall), reinterpret_cast<LPVOID*>(&internallua::lua_pcall)) != MH_OK)
 	{
 		throw std::runtime_error("Unable to enable pcall hook");
 	}
 
-	if (MH_CreateHook((LPVOID)internallua::luaL_getfield, &gamehooks::LuaGetField, reinterpret_cast<LPVOID*>(&internallua::luaL_getfield)) != MH_OK)
+	if (MH_CreateHook((LPVOID)internallua::luaL_getfield, reinterpret_cast<LPVOID>(&gamehooks::LuaGetField), reinterpret_cast<LPVOID*>(&internallua::luaL_getfield)) != MH_OK)
 	{
 		throw std::runtime_error("Unable to enable getfield hook");
 	}
-	if (MH_CreateHook((LPVOID)internallua::lua_load, &gamehooks::ReaderString, reinterpret_cast<LPVOID*>(&internallua::lua_load)) != MH_OK)
+	if (MH_CreateHook((LPVOID)internallua::lua_load, reinterpret_cast<LPVOID>(&gamehooks::ReaderString), reinterpret_cast<LPVOID*>(&internallua::lua_load)) != MH_OK)
 	{
 		throw std::runtime_error("Unable to enable getfield hook");
 	}
