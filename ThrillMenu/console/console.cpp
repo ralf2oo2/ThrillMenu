@@ -3,36 +3,63 @@
 //
 #include "console.h"
 #include "../ext/imgui/imgui.h"
+#include "../game/lua/internallua.h"
+#include <iostream>
 LuaConsole console;
 
-static int lua_console_print(lua_State *L) {
-    int nargs = lua_gettop(L);
+static int __fastcall lua_console_print(lua_State *L) {
+    std::cout << "[Debug] lua_console_print was invoked!" << std::endl;
+
+    int nargs = internallua::lua_gettop(L);
+    std::cout << "[Debug] Argument count (nargs): " << nargs << std::endl;
     std::string output;
     for (int i = 1; i <= nargs; i++) {
-        size_t len;
-        const char* str = lua_tolstring(L, i, &len);
-        if (str) output += str;
+        size_t len = 0;
+        const char* str = internallua::lua_tolstring(L, i, &len);
+        if (str) {
+            output.append(str, len);
+        } else {
+            output += "nil";
+        }
         if (i < nargs) output += "\t";
-        lua_pop(L, 1);
     }
     console.items.push_back("[Output] " + output);
+    console.scroll_to_bottom = true;
     return 0;
 }
 
 void SetupLuaConsole(lua_State *L) {
-    lua_register(L, "print", lua_console_print);
+    if (!L) {
+        return;
+    }
+
+    internallua::lua_pushcclosure(L, reinterpret_cast<internallua::lua_CFunction>(lua_console_print), 0);
+    internallua::luaL_setfield(L, LUA_GLOBALSINDEX, "print");
 }
 
 void ExecuteCommand(lua_State *L, const char* command) {
+    std::cout << "[Debug] Executing command: " << command << std::endl;
     console.items.push_back("> " + std::string(command));
 
-    int error = luaL_dostring(L, command);
-    if (error) {
-        const char* err_msg = lua_tostring(L, -1);
-        console.items.push_back("[Error] " + std::string(err_msg ? err_msg : "Unknown error"));
-        lua_pop(L, 1);
+    std::cout << "[Debug] Calling luaL_loadstring at pointer..." << std::endl;
+    if (internallua::luaL_loadstring(L, command) == 0) {
+        std::cout << "[Debug] Loadstring survived" << std::endl;
+        if (internallua::lua_pcall(L, 0, 0, 0) != 0) {
+            const char* err_msg = internallua::lua_tolstring(L, -1, nullptr);
+            std::cout << "[Error] pcall failed: " << (err_msg ? err_msg : "unknown") << std::endl;
+            console.items.push_back("[Error] " + std::string(err_msg ? err_msg : "Unknown execution error"));
+
+            internallua::lua_settop(L, -2);
+        } else {
+            std::cout << "[Debug] survived pcall" << std::endl;
+        }
+    } else {
+        std::cout << "[Debug] Error branch" << std::endl;
+        const char* err_msg = internallua::lua_tolstring(L, -1, nullptr);
+        std::cout << "[Error] Loadstring failed: " << (err_msg ? err_msg : "unknown") << std::endl;
+        console.items.push_back("[Error] " + std::string(err_msg ? err_msg : "Syntax error"));
+        internallua::lua_settop(L, -2);
     }
-    console.scroll_to_bottom = true;
 }
 
 void RenderLuaConsole(lua_State *L) {

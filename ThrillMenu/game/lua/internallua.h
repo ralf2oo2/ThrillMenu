@@ -1,4 +1,5 @@
 #pragma once
+#include <cstring>
 
 namespace internallua {
 
@@ -10,10 +11,6 @@ namespace internallua {
 	typedef int(__fastcall* _luaL_setfield)(void* L, int index, const char* k);
 	inline _luaL_setfield luaL_setfield = (_luaL_setfield)0x76F320;
 
-	//luaL_loadstring
-	typedef int(__fastcall* _luaL_loadstring)(void* L, const char* s);
-	inline _luaL_loadstring luaL_loadstring = (_luaL_loadstring)0x79AB20;
-
 	//luaL_loadfilex
 	typedef int(__fastcall* _luaL_loadfilex)(void* L, const char* filename);
 	inline _luaL_loadfilex luaL_loadfilex = (_luaL_loadfilex)0x77E5B0;
@@ -21,6 +18,12 @@ namespace internallua {
 	//luaL_loadbuffer
 	typedef int(__fastcall* _luaL_loadbuffer)(void* L, const char* buff, size_t sz, const char* name);
 	inline _luaL_loadbuffer luaL_loadbuffer = (_luaL_loadbuffer)0x77E790;
+
+	//luaL_loadstring
+	inline int luaL_loadstring(void* L, const char* s) {
+		if (!L || !s) return -1;
+		return luaL_loadbuffer(L, s, std::strlen(s), s);
+	}
 
 	//lua_pcall
 	typedef int(__fastcall* _lua_pcall)(void* L, int nargs, int nresults, int errfunc);
@@ -43,4 +46,13 @@ namespace internallua {
 
 	typedef int(__fastcall* _lua_settop)(void* L, int idx);
 	inline _lua_settop lua_settop = (_lua_settop)0x76e170;
+
+	inline int lua_gettop(void* L) {
+		if (!L) return 0;
+		return (*(int*)((char*)L + 8) - *(int*)((char*)L + 12)) >> 4;
+	}
+
+	typedef int (*lua_CFunction)(void* L);
+	typedef void (__fastcall* _lua_pushcclosure)(void* L, lua_CFunction fn, int n);
+	inline _lua_pushcclosure lua_pushcclosure = (_lua_pushcclosure)0x76ead0;
 }

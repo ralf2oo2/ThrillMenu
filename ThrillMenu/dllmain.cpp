@@ -1,8 +1,38 @@
 ﻿#include <windows.h>
 #include <thread>
-#include <cstdint>
 #include <iostream>
+#include <fstream>
+#include <streambuf>
+#include <memory>
 #include "hooks/hooks.h"
+
+class TeeBuf : public std::streambuf {
+public:
+    TeeBuf(std::streambuf* sb1, std::streambuf* sb2) : sb1_(sb1), sb2_(sb2) {}
+
+protected:
+    int overflow(int c) override {
+        if (c == EOF) return EOF;
+        if (sb1_->sputc(c) == EOF || sb2_->sputc(c) == EOF) return EOF;
+        sb1_->pubsync();
+        sb2_->pubsync();
+        return c;
+    }
+
+    int sync() override {
+        int r1 = sb1_->pubsync();
+        int r2 = sb2_->pubsync();
+        return (r1 == 0 && r2 == 0) ? 0 : -1;
+    }
+
+private:
+    std::streambuf* sb1_;
+    std::streambuf* sb2_;
+};
+
+std::ofstream g_LogFile;
+std::unique_ptr<TeeBuf> g_TeeBuf;
+std::streambuf* g_OriginalStdoutBuf = nullptr;
 
 void Setup(const HINSTANCE instance) {
     try
@@ -12,6 +42,14 @@ void Setup(const HINSTANCE instance) {
         freopen_s(&fDummy, "CONIN$", "r", stdin);
         freopen_s(&fDummy, "CONOUT$", "w", stderr);
         freopen_s(&fDummy, "CONOUT$", "w", stdout);
+
+        g_LogFile.open("console_debug.log", std::ios::out | std::ios::trunc);
+        if (g_LogFile.is_open()) {
+            g_OriginalStdoutBuf = std::cout.rdbuf();
+            g_TeeBuf = std::make_unique<TeeBuf>(g_OriginalStdoutBuf, g_LogFile.rdbuf());
+            std::cout.rdbuf(g_TeeBuf.get());
+        }
+
         gui::Setup();
         hooks::Setup();
         std::cout << "Setup initialized!" << std::endl;
@@ -33,6 +71,13 @@ void Setup(const HINSTANCE instance) {
         std::this_thread::sleep_for(std::chrono::milliseconds(200));
     }
 UNLOAD:
+    if (g_OriginalStdoutBuf) {
+        std::cout.rdbuf(g_OriginalStdoutBuf);
+    }
+    if (g_LogFile.is_open()) {
+        g_LogFile.close();
+    }
+
     hooks::Destroy();
     gui::Destroy();
 

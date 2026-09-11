@@ -52,7 +52,7 @@ void* __fastcall gamehooks::CameraSwitcher(void* pThis, void* edx, int a2) {
 void __fastcall gamehooks::LuaCall(void *L, int nargs, int nresults) {
 	gamehooks::LuaCallOg(L, nargs, nresults);
 
-	Globals::g_LuaState = static_cast<lua_State *>(L);
+	Globals::SetLuaState(static_cast<lua_State *>(L));
 
 	std::cout << "Possible lua context near: " << std::hex << L << std::endl;
 }
