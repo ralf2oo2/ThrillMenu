@@ -8,62 +8,6 @@ add_library (ThrillMenu SHARED "dllmain.cpp"   "hooks/hooks.cpp" "hooks/hooks.h"
         console/console.h
         console/console.cpp
         game/globals.h
-
-        #lua
-        ext/lua51/src/lapi.c
-        ext/lua51/src/lapi.h
-        ext/lua51/src/lauxlib.c
-        ext/lua51/src/lauxlib.h
-        ext/lua51/src/lbaselib.c
-        ext/lua51/src/lcode.c
-        ext/lua51/src/lcode.h
-        ext/lua51/src/ldblib.c
-        ext/lua51/src/ldebug.c
-        ext/lua51/src/ldebug.h
-        ext/lua51/src/ldo.c
-        ext/lua51/src/ldo.h
-        ext/lua51/src/ldump.c
-        ext/lua51/src/lfunc.c
-        ext/lua51/src/lfunc.h
-        ext/lua51/src/lgc.c
-        ext/lua51/src/lgc.h
-        ext/lua51/src/linit.c
-        ext/lua51/src/liolib.c
-        ext/lua51/src/llex.c
-        ext/lua51/src/llimits.h
-        ext/lua51/src/lmathlib.c
-        ext/lua51/src/lmem.c
-        ext/lua51/src/lmem.h
-        ext/lua51/src/loadlib.c
-        ext/lua51/src/lobject.c
-        ext/lua51/src/lobject.h
-        ext/lua51/src/lopcodes.c
-        ext/lua51/src/lopcodes.h
-        ext/lua51/src/loslib.c
-        ext/lua51/src/lparser.c
-        ext/lua51/src/lparser.h
-        ext/lua51/src/lstate.c
-        ext/lua51/src/lstate.h
-        ext/lua51/src/lstring.c
-        ext/lua51/src/lstring.h
-        ext/lua51/src/lstrlib.c
-        ext/lua51/src/ltable.c
-        ext/lua51/src/ltable.h
-        ext/lua51/src/ltablib.c
-        ext/lua51/src/ltm.c
-        ext/lua51/src/ltm.h
-        #ext/lua51/src/lua.c
-        ext/lua51/src/lua.h
-        #ext/lua51/src/luac.c
-        ext/lua51/src/luaconf.h
-        ext/lua51/src/lualib.h
-        ext/lua51/src/lundump.c
-        ext/lua51/src/lundump.h
-        ext/lua51/src/lvm.c
-        ext/lua51/src/lvm.h
-        ext/lua51/src/lzio.c
-        ext/lua51/src/lzio.h
-        #ext/lua51/src/print.c
 )
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
