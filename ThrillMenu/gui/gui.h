@@ -1,6 +1,10 @@
 #pragma once
 #include <d3d9.h>
 
+extern "C" {
+	#include "lua.h"
+}
+
 namespace gui {
 	//show menu
 	inline bool open = true;
@@ -32,4 +36,5 @@ namespace gui {
 	void SetupMenu(LPDIRECT3DDEVICE9 device) noexcept;
 	void Destroy() noexcept;
 	void Render() noexcept;
+	void RenderGui(lua_State *L, bool* p_open) noexcept;
 }

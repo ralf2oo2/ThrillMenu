@@ -6,12 +6,11 @@
 #include <vector>
 #include <string>
 #include <iostream>
-#include "../game/lua/internallua.h"
-#include "../hooks/gamehooks.h"
+
+#include "../console/console.h"
+#include "../game/globals.h"
 extern "C" {
 #include "lua.h"
-#include "lualib.h"
-#include "lauxlib.h"
 }
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(
@@ -248,55 +247,10 @@ void gui::Render() noexcept
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 
-	
-
-
-	ImGui::Begin("Thrill Menu", &open);
-	if (ImGui::Button("Press Other"))
-	{
-		uintptr_t luamanagerptr = *(uintptr_t*)0xA0C374;
-		uintptr_t secondPointer = *(uintptr_t*)(luamanagerptr + 4 * 8);
-		uintptr_t thirdPointer = (uintptr_t)(secondPointer +4 * 4);
-		std::cout << "Possible lua: " << std::hex << thirdPointer << std::endl;
-
-		/*FILE* file = gamehooks::getDebugFile(0, 0, 8, 0, "");
-
-		FILE* output = fopen("outconsole.txt", "wb");
-		char buffer[4096];
-		size_t bytesRead;
-
-		while ((bytesRead = fread(buffer, 1, sizeof(buffer), file)) > 0) {
-			fwrite(buffer, 1, bytesRead, output);
-		}
-
-		fclose(output);*/
-
+	// Render here
+	if (open) {
+		RenderGui(Globals::g_LuaState, &open);
 	}
-	if (ImGui::Button("Press Me"))
-	{
-		uintptr_t luamanagerptr = *(uintptr_t*)0xA0C374;
-		uintptr_t secondPointer = *(uintptr_t*)(luamanagerptr + 4 * 8);
-		uintptr_t thirdPointer = (uintptr_t)(secondPointer + 4 * 4);
-		std::cout << "Possible lua: " << std::hex << thirdPointer << std::endl;
-		lua_State* L = (lua_State*)thirdPointer;
-
-		const char* script = "print('Hello, Lua!')";
-
-		if (internallua::luaL_loadstring(L, script) == 0) {
-			// Execute the loaded chunk
-			if (internallua::lua_pcall(L, 0, 0, 0) != 0) {
-				printf("Error: lua");
-			}
-		}
-		else {
-			printf("Failed to load Lua code\n");
-		}
-		std::cout << "Button pressed!" << std::endl;
-	}
-
-	//ImGui::Text("%.2X", money);
-	ImGui::Text("Money:");
-	ImGui::End();
 
 	ImGuiIO& io = ImGui::GetIO();
 	io.MouseDrawCursor = true;
@@ -304,6 +258,28 @@ void gui::Render() noexcept
 	ImGui::EndFrame();
 	ImGui::Render();
 	ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
+}
+
+void gui::RenderGui(lua_State *L, bool *p_open) noexcept {
+	if (!ImGui::Begin("Thrill Menu", &open, ImGuiWindowFlags_NoCollapse)) {
+		ImGui::End();
+		return;
+	}
+
+	if (ImGui::BeginTabBar("Tabs", ImGuiTabBarFlags_None)) {
+		if (ImGui::BeginTabItem("Main")) {
+			ImGui::Text("Status: %s", L ? "Lua Active" : "Waiting for Park...");
+
+			ImGui::EndTabItem();
+		}
+
+		if (ImGui::BeginTabItem("Lua Console")) {
+			RenderLuaConsole(L);
+			ImGui::EndTabItem();
+		}
+		ImGui::EndTabBar();
+	}
+	ImGui::End();
 }
 
 LRESULT CALLBACK WindowProcess(
