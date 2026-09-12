@@ -4,27 +4,17 @@
 
 #ifndef THRILLMENU_GLOBALS_H
 #define THRILLMENU_GLOBALS_H
-#include "../console/console.h"
+#include "engine.h"
 
 extern "C" {
     #include <lua.h>
 }
 
-
 namespace Globals {
-    inline lua_State* g_LuaState = nullptr;
-    inline bool g_ConsoleInitialized = false;
+    constexpr uintptr_t g_Engine = 0xdd0818;
 
-    inline void SetLuaState(lua_State* L) {
-        if (g_LuaState != L) {
-            g_LuaState = L;
-            g_ConsoleInitialized = false; // Reset if the game allocates a new state
-        }
-
-        if (L && !g_ConsoleInitialized) {
-            SetupLuaConsole(L);
-            g_ConsoleInitialized = true;
-        }
+    inline Engine* GetEngine() {
+        return *reinterpret_cast<Engine**>(g_Engine);
     }
 }
 

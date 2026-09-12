@@ -8,6 +8,7 @@ add_library (ThrillMenu SHARED "dllmain.cpp"   "hooks/hooks.cpp" "hooks/hooks.h"
         console/console.h
         console/console.cpp
         game/globals.h
+        game/engine.h
 )
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)

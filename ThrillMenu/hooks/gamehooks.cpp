@@ -2,6 +2,7 @@
 #include "../game/lua/internallua.h"
 #include <iostream>
 
+#include "../console/console.h"
 #include "../game/globals.h"
 
 void* __fastcall gamehooks::CameraController(void* pThis, void* edx) {
@@ -52,9 +53,21 @@ void* __fastcall gamehooks::CameraSwitcher(void* pThis, void* edx, int a2) {
 void __fastcall gamehooks::LuaCall(void *L, int nargs, int nresults) {
 	gamehooks::LuaCallOg(L, nargs, nresults);
 
-	Globals::SetLuaState(static_cast<lua_State *>(L));
-
 	std::cout << "Possible lua context near: " << std::hex << L << std::endl;
+}
+
+void __fastcall gamehooks::InitScriptingEnvironment(int* pThis, void* edx, const uint8_t startupMode) {
+	gamehooks::InitScriptingEnvironmentOg(pThis, startupMode);
+
+	if (const Engine* engine = reinterpret_cast<Engine*>(pThis[1]); engine && engine->m_luaState) {
+
+
+		std::cout << "Engine Address: 0x" << std::hex << engine << std::dec << std::endl;
+
+		SetupLuaConsole(engine->m_luaState);
+	}
+
+	std::cout << "Lua initialized" << std::endl;
 }
 
 void gamehooks::DumpAllGlobalNames(void* L) {

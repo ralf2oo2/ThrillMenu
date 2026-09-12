@@ -10,19 +10,59 @@ LuaConsole console;
 static int __fastcall lua_console_print(lua_State *L) {
     std::cout << "[Debug] lua_console_print was invoked!" << std::endl;
 
-    int nargs = internallua::lua_gettop(L);
+    const int nargs = internallua::lua_gettop(L);
     std::cout << "[Debug] Argument count (nargs): " << nargs << std::endl;
     std::string output;
-    for (int i = 1; i <= nargs; i++) {
-        size_t len = 0;
-        const char* str = internallua::lua_tolstring(L, i, &len);
-        if (str) {
-            output.append(str, len);
-        } else {
-            output += "nil";
+
+    for (int i = 1; i <= nargs; ++i) {
+        const int type = internallua::lua_type(L, i);
+        std::cout << "[Debug] found type: " << type << std::endl;
+        switch (type) {
+            case LUA_TNIL:
+                output += "nil";
+                break;
+            case LUA_TBOOLEAN:
+                output += internallua::lua_toboolean(L, i) ? "true" : "false";
+                break;
+            case LUA_TNUMBER:
+            case LUA_TSTRING:
+            case 6: {
+                size_t len = 0;
+                if (const char* str = internallua::lua_tolstring(L, i, &len)) {
+                    output.append(str);
+                }
+                break;
+            }
+            default: {
+                auto typeName = "userdata";
+                if (type == LUA_TLIGHTUSERDATA) {
+                    typeName = "lightuserdata";
+                }
+                if (type == 7) typeName = "table";
+                else if (type == 8) typeName = "function";
+
+                const void* ptr = nullptr;
+                try {
+                    ptr = internallua::lua_topointer(L, i);
+                } catch (...) {
+                    ptr = nullptr;
+                }
+
+                if (ptr) {
+                    char buf[128];
+                    std::snprintf(buf, sizeof(buf), "%s: %p", typeName, ptr);
+                    output += buf;
+                } else {
+                    output += typeName;
+                }
+                break;
+            }
         }
-        if (i < nargs) output += "\t";
+        if (i < nargs) {
+            output += "\t";
+        }
     }
+
     console.items.push_back("[Output] " + output);
     console.scroll_to_bottom = true;
     return 0;

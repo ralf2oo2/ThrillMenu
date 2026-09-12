@@ -249,7 +249,13 @@ void gui::Render() noexcept
 
 	// Render here
 	if (open) {
-		RenderGui(Globals::g_LuaState, &open);
+		lua_State* L = nullptr;
+
+		if (const Engine* engine = Globals::GetEngine(); engine != nullptr) {
+			L = engine->m_luaState;
+		}
+
+		RenderGui(L, &open);
 	}
 
 	ImGuiIO& io = ImGui::GetIO();
@@ -289,11 +295,26 @@ LRESULT CALLBACK WindowProcess(
 	LPARAM longParam
 )
 {
+
+	static bool f1WasPressed = false;
+	bool f1IsDown = (GetAsyncKeyState(VK_OEM_3) & 0x8000) != 0;
 	//togglemenu
-	if (GetAsyncKeyState(VK_INSERT) & 1)
+	if (f1IsDown && !f1WasPressed)
 	{
+		std::cout << "F1" << std::endl;
 		gui::open = !gui::open;
+
+		if (gui::open)
+		{
+			CallWindowProc(gui::originalWindowProcesss, window, WM_ACTIVATE, WA_INACTIVE, 0);
+		}
+		else
+		{
+			CallWindowProc(gui::originalWindowProcesss, window, WM_ACTIVATE, WA_ACTIVE, 0);
+		}
 	}
+	f1WasPressed = f1IsDown;
+
 	if (gui::open && ImGui_ImplWin32_WndProcHandler(
 		window,
 		message,

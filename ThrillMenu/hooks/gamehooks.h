@@ -1,4 +1,6 @@
 #pragma once
+#include <cstdint>
+
 extern "C" {
 #include "lua.h"
 #include <cstdio>
@@ -36,6 +38,10 @@ namespace gamehooks
 
 	typedef FILE* (__fastcall* GetDebugFile)(int a, int b, int c, int d, const char* text);
 	inline GetDebugFile getDebugFile = (GetDebugFile)0x7420E0;
+
+	typedef void(__thiscall* InitScriptingEnvironmentOriginal)(int* pThis, uint8_t startupMode);
+	inline InitScriptingEnvironmentOriginal InitScriptingEnvironmentOg = nullptr;
+	void __fastcall InitScriptingEnvironment(int* pThis, void* edx, uint8_t startupMode);
 
 
 	void DumpAllGlobalNames(void *L);

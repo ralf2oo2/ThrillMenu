@@ -32,6 +32,7 @@ void hooks::Setup()
 		reinterpret_cast<void**>(&ResetOriginal)
 	)) throw std::runtime_error("Unable to hook Reset()");
 
+
 	// Game related hooks
 
 	gamehooks::CameraControllerOg = (gamehooks::CameraControllerOriginal)0x575920;
@@ -70,10 +71,16 @@ void hooks::Setup()
 		throw std::runtime_error("Unable to enable cameraswitcher hook");
 	}
 
-	gamehooks::LuaCallOg = (gamehooks::LuaCallOriginal)0x76fbd0;
+	gamehooks::LuaCallOg = reinterpret_cast<gamehooks::LuaCallOriginal>(0x76fbd0);
 	if (MH_CreateHook((LPVOID)gamehooks::LuaCallOg, reinterpret_cast<LPVOID>(&gamehooks::LuaCall), reinterpret_cast<LPVOID*>(&gamehooks::LuaCallOg)) != MH_OK)
 	{
 		throw std::runtime_error("Unable to enable luacall hook");
+	}
+
+	gamehooks::InitScriptingEnvironmentOg = reinterpret_cast<gamehooks::InitScriptingEnvironmentOriginal>(0x4115f0);
+	if (MH_CreateHook((LPVOID)gamehooks::InitScriptingEnvironmentOg, reinterpret_cast<LPVOID>(&gamehooks::InitScriptingEnvironment), reinterpret_cast<LPVOID*>(&gamehooks::InitScriptingEnvironmentOg)) != MH_OK)
+	{
+		throw std::runtime_error("Unable to enable scriptingenvironment hook");
 	}
 
 	if (MH_EnableHook(MH_ALL_HOOKS))

@@ -55,4 +55,25 @@ namespace internallua {
 	typedef int (*lua_CFunction)(void* L);
 	typedef void (__fastcall* _lua_pushcclosure)(void* L, lua_CFunction fn, int n);
 	inline _lua_pushcclosure lua_pushcclosure = (_lua_pushcclosure)0x76ead0;
+
+	typedef int(__fastcall* _lua_getinfo)(void* L, char *what, void *ar);
+	inline _lua_getinfo lua_getinfo = (_lua_getinfo)0x78a760;
+
+	typedef void *(__fastcall* _index2adr)(void* L, int idx);
+	inline _index2adr index2adr = (_index2adr)0x76dd90;
+
+	inline int lua_type(lua_State *L, int idx) {
+		void* slot = index2adr(L, idx);
+		if (!slot) {
+			return -1;
+		}
+
+		return *reinterpret_cast<int*>(reinterpret_cast<char*>(slot) + 0xc);
+	}
+
+	typedef void *(__fastcall* _lua_topointer)(void* L, int idx);
+	inline _lua_topointer lua_topointer = (_lua_topointer)0x7701d0;
+
+	typedef char *(__fastcall* _lua_typename)(void* L, int idx);
+	inline _lua_typename lua_typename = (_lua_typename)0x77e8e0;
 }
